@@ -1,5 +1,5 @@
 function varargout = main(varargin)
-tic;
+
 
 % MAIN MATLAB code for main.fig
 %      MAIN, by itself, creates a new MAIN or raises the existing
@@ -27,7 +27,7 @@ tic;
 % Last Modified by GUIDE v2.5 16-Jan-2020 19:00:23
 
 % Begin initialization code - DO NOT EDIT
-tic;
+
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
@@ -35,28 +35,28 @@ gui_State = struct('gui_Name',       mfilename, ...
                    'gui_OutputFcn',  @main_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
-               toc;
                
-               tic;
+               
+               
 if nargin && ischar(varargin{1})
   
     gui_State.gui_Callback = str2func(varargin{1});
 end
-toc;
 
-tic;
+
+
 if nargout
     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
 else
     gui_mainfcn(gui_State, varargin{:});
 end
-toc;
+
 % End initialization code - DO NOT EDIT
 
 
 % --- Executes just before main is made visible.
 function main_OpeningFcn(hObject, eventdata, handles, varargin)
-tic;
+
 
 % jFrame=get(handles.figure1,'javaframe');  
 % jicon=javax.swing.ImageIcon('received_794070037686646.png');
@@ -87,10 +87,10 @@ guidata(hObject, handles);
 % UIWAIT makes main wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
-toc;
+
 % --- Outputs from this function are returned to the command line.
 function varargout = main_OutputFcn(hObject, eventdata, handles)
-tic;
+
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -99,12 +99,13 @@ tic;
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
-toc;
+
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
-tic;
+
 x = 0;
-waitb = 0;
+res_train_classes();
+neural_net();
 wb = waitbar(x,'Start Calling Camera');
 waitbar(x + 0.2, wb, 'Start Calling Camera...');    
 parpool(4);
@@ -123,43 +124,44 @@ nnet = alexnet;
 waitbar(x + 1, wb, 'Done');
 delete(wb);
 
-toc;
 
-tic;
+
+
 while true
+    
     picture = camera.snapshot;
     picture = imresize(picture,[227,227]);
     label = classify(nnet, picture);
     
     image(picture);
-    tic;
-    if label == 'banana'
-        set(handles.edit1, 'ForegroundColor', 'green', 'string', '+ YES');
-        toc;
+    
+%     if label == 'banana'
+%         set(handles.edit1, 'ForegroundColor', 'green', 'string', '+ YES');
         
-        bel = res_train_classes(picture);
+%         bel = res_train_classes(picture);
+    bel = classify_model(picture);    
         
-        tic;
         if bel == 'A' || bel == 'B'
             set(handles.edit2, 'ForegroundColor', 'green', 'string', '+ YES');
             set(handles.edit3, 'ForegroundColor', 'green', 'string', bel);
-            toc;
-                   tic;
+            
+            
+                   
         diff_im = imsubtract(picture(:,:,2), rgb2gray(picture)); 
       diff_im = medfilt2(diff_im, [3 3]);
       diff_im = imbinarize(diff_im,0.18);
       diff_im = bwareaopen(diff_im,300);
       bw = bwlabel(diff_im, 8);
       stats = regionprops(bw, 'BoundingBox', 'Centroid');
-      toc;
       
-      tic;
-        imshow(picture)
-        toc;
+      
+      
+      imshow(picture)
+      
         
-        tic;
+        
       hold on
-      for object = 1:length(stats)
+      parfor object = 1:length(stats)
           bb = stats(object).BoundingBox;
           bc = stats(object).Centroid;
           rectangle('Position',bb,'EdgeColor','g','LineWidth',2)
@@ -167,32 +169,32 @@ while true
           a=text(bc(1)+15,bc(2), strcat('X: ', num2str(round(bc(1))), '    Y: ', num2str(round(bc(2)))));
           set(a, 'FontName', 'Arial', 'FontWeight', 'bold', 'FontSize', 12, 'Color', 'yellow');
       end
-      toc;
+      
       
       hold off
        drawnow limitrate;
-       tic;
+       
     if ~isempty(stats)
             set(handles.edit4, 'ForegroundColor', 'green', 'string', '+ YES');
         else
             set(handles.edit4, 'ForegroundColor', 'red', 'string', '- NO');
     end
-    toc;
     
-    tic;
+    
+    
           a = blacked_background(picture);
         imshow(a);
         drawnow limitrate;
-        toc;
         
-        tic;
+        
+        
         
 %         grayImage = picture;
 % [rows, columns, numberOfColorChannels] = size(grayImage)
 % if numberOfColorChannels > 1
 %   grayImage = rgb2gray(grayImage);
 % end
-% toc;
+% 
 % 
 % binaryImage = grayImage == 0;
 % binaryImage = imclearborder(binaryImage);
@@ -210,57 +212,57 @@ while true
 % end
 % drawnow limitrate;
 % hold off
-tic;
+
 
 grayImage = a;
 [rows, columns, numberOfColorChannels] = size(grayImage);
-toc;
 
-tic;
+
+
 if numberOfColorChannels > 1
   grayImage = rgb2gray(grayImage);
 end
 
-toc;
 
-tic;
+
+
 hp = impixelinfo();
 binaryImage = grayImage == 0;
 binaryImage = imclearborder(binaryImage);
 [labeledImage, numBlobs] = bwlabel(~binaryImage);
 coloredLabels = label2rgb (labeledImage, 'hsv', 'k', 'shuffle');
 props = regionprops(labeledImage, 'BoundingBox', 'Centroid');
-toc;
 
-tic;
+
+
 imshow(picture);
 hold on;
-toc;
 
-tic;
-for k = 1 : numBlobs
+
+
+parfor k = 1 : numBlobs
    bb = props(k).BoundingBox;
    bc = props(k).Centroid;
    rectangle('Position',bb,'EdgeColor','c','LineWidth',2);
 end
 
 drawnow limitrate;
-toc;
 
-tic;
+
+
     if ~isempty(numBlobs) && numBlobs > 1
             set(handles.edit5, 'ForegroundColor', 'r', 'string',numBlobs);
         else
             set(handles.edit5, 'ForegroundColor', 'green', 'string', '- NONE');
     end
-    toc;
     
-    tic;
+    
+    
   if isempty(numBlobs) && ~isempty(stats) && numBlobs > 1
       title('Accepted');
           h = waitbar(0,'ACCEPTED');
     steps = 1000;
-    for step = 800:steps
+    parfor step = 800:steps
         waitbar(step / steps)
     end
     close(h)
@@ -268,42 +270,37 @@ tic;
       title('Reject');
              h = waitbar(0,'REJECT');
     steps = 1000;
-    for step = 800:steps
+    parfor step = 800:steps
         waitbar(step / steps)
     end
     close(h)
   end
-  toc;
+  
         else
-               toc; 
+                
             set(handles.edit2, 'ForegroundColor', 'r', 'string', '- NONE');
             set(handles.edit3, 'ForegroundColor', 'r', 'string', '--');
             set(handles.edit4, 'ForegroundColor', 'r', 'string', '--');
             set(handles.edit5, 'ForegroundColor', 'r', 'string', '--');
             title('REJECT');
         
-        toc;
+        
     end
         
-    else
-    tic;
-        drawnow limitrate;
-        toc;
-        set(handles.edit1, 'ForegroundColor', 'r', 'string', '- NONE');
-        set(handles.edit2, 'ForegroundColor', 'r', 'string', '--');
-        set(handles.edit3, 'ForegroundColor', 'r', 'string', '--');
-        set(handles.edit4, 'ForegroundColor', 'r', 'string', '--');
-        set(handles.edit5, 'ForegroundColor', 'r', 'string', '--');
-        
-
-      
-
-
-end    
+%     else
+%     
+%         drawnow limitrate;
+%         
+%         set(handles.edit1, 'ForegroundColor', 'r', 'string', '- NONE');
+%         set(handles.edit2, 'ForegroundColor', 'r', 'string', '--');
+%         set(handles.edit3, 'ForegroundColor', 'r', 'string', '--');
+%         set(handles.edit4, 'ForegroundColor', 'r', 'string', '--');
+%         set(handles.edit5, 'ForegroundColor', 'r', 'string', '--');
+%     end    
 end
 
 
-toc;
+
 % --- Executes on button press in pushbutton4.
 function pushbutton4_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton4 (see GCBO)
@@ -331,7 +328,7 @@ function edit1_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-    toc;
+    
 end
 
 
