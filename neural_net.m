@@ -8,6 +8,7 @@ global trainingFeatures;
 global featureLayer;
 global testSet;
 global imageSize;
+global classifier;
 
 net.Layers(1);
 
@@ -34,5 +35,6 @@ trainingFeatures = activations(net, augmentedTrainingSet, featureLayer, 'MiniBat
 %%
 
 trainingLables = trainingSet.Labels;
+classifier = fitcecoc(trainingFeatures, trainingLables, 'Learner', 'Linear', 'Coding', 'onevsall', 'ObservationsIn', 'columns');
 end
 

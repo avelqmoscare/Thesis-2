@@ -7,19 +7,20 @@ global net;
 global featureLayer;
 global testSet;
 global imageSize;
-classifier = fitcecoc(trainingFeatures, trainingLables, 'Learner', 'Linear', 'Coding', 'onevsall', 'ObservationsIn', 'columns');
+global classifier;
+
 
 %%
-testFeatures = activations(net, augmentedTestSet, featureLayer, 'MiniBatchSize', 32, 'OutputAs', 'columns');
-predictLabels = predict(classifier, testFeatures, 'ObservationsIn', 'columns');
-
-%%
-testLables = testSet.Labels;
-confMat = confusionmat(testLables, predictLabels);
-
-%%
-confMat = bsxfun(@rdivide, confMat, sum(confMat,2));
-mean(diag(confMat));
+% testFeatures = activations(net, augmentedTestSet, featureLayer, 'MiniBatchSize', 32, 'OutputAs', 'columns');
+% predictLabels = predict(classifier, testFeatures, 'ObservationsIn', 'columns');
+% 
+% %%
+% testLables = testSet.Labels;
+% confMat = confusionmat(testLables, predictLabels);
+% 
+% %%
+% confMat = bsxfun(@rdivide, confMat, sum(confMat,2));
+% mean(diag(confMat));
 
 newImage = img;
 %%
