@@ -135,8 +135,8 @@ while true
     
     image(picture);
     
-%     if label == 'banana'
-%         set(handles.edit1, 'ForegroundColor', 'green', 'string', '+ YES');
+    if label == 'banana'
+        set(handles.edit1, 'ForegroundColor', 'green', 'string', '+ YES');
         
 %         bel = res_train_classes(picture);
     bel = classify_model(picture);    
@@ -287,16 +287,16 @@ drawnow limitrate;
         
     end
         
-%     else
-%     
-%         drawnow limitrate;
-%         
-%         set(handles.edit1, 'ForegroundColor', 'r', 'string', '- NONE');
-%         set(handles.edit2, 'ForegroundColor', 'r', 'string', '--');
-%         set(handles.edit3, 'ForegroundColor', 'r', 'string', '--');
-%         set(handles.edit4, 'ForegroundColor', 'r', 'string', '--');
-%         set(handles.edit5, 'ForegroundColor', 'r', 'string', '--');
-%     end    
+    else
+    
+        drawnow limitrate;
+        
+        set(handles.edit1, 'ForegroundColor', 'r', 'string', '- NONE');
+        set(handles.edit2, 'ForegroundColor', 'r', 'string', '--');
+        set(handles.edit3, 'ForegroundColor', 'r', 'string', '--');
+        set(handles.edit4, 'ForegroundColor', 'r', 'string', '--');
+        set(handles.edit5, 'ForegroundColor', 'r', 'string', '--');
+    end    
 end
 
 
